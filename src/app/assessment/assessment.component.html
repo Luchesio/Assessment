@@ -1,0 +1,90 @@
+<!-- Ensuring i comment each section of the application for other developers to understand my codebase -->
+<div class="kanban-container">
+  <!-- Header -->
+  <div class="kanban-header">
+    <h1 class="kanban-title">Production Pipeline</h1>
+    <div class="add-item-section">
+      <input
+        type="text"
+        [(ngModel)]="newItemTitle"
+        placeholder="Enter new item..."
+        class="item-input"
+        (keyup.enter)="addItem()"
+        maxlength="100"
+      />
+      <button
+        class="add-button"
+        (click)="addItem()"
+        [disabled]="!newItemTitle.trim()"
+      >
+        Add Item
+      </button>
+    </div>
+  </div>
+
+  <!-- Kanban Board -->
+  <div class="kanban-board">
+    <div
+      class="kanban-column"
+      *ngFor="let stage of stages"
+      [style.background-color]="getStageColor(stage)"
+    >
+      <!-- Column Header -->
+      <div
+        class="column-header"
+        [style.background-color]="getStageHeaderColor(stage)"
+      >
+        <h3 class="stage-title">{{ stage }}</h3>
+        <span class="item-count">{{ getItemsForStage(stage).length }}</span>
+      </div>
+
+      <!-- Column Content -->
+      <div class="column-content">
+        <div
+          class="kanban-item"
+          *ngFor="let item of getItemsForStage(stage); trackBy: trackByItemId"
+          (click)="onItemClick(item)"
+          (dblclick)="onItemDoubleClick(item)"
+        >
+          <div class="item-content">
+            <h4 class="item-title">{{ item.title }}</h4>
+            <div class="item-meta">
+              <small class="item-id">#{{ item.id }}</small>
+              <small class="item-date">{{
+                item.createdAt | date : "short"
+              }}</small>
+            </div>
+          </div>
+
+          <!-- Action hints -->
+          <div class="item-actions">
+            <span class="action-hint" *ngIf="stage !== 'Ship'">
+              Click to move forward →
+            </span>
+            <span class="action-hint" *ngIf="stage !== 'Idea'">
+              Double-click to move back ←
+            </span>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div class="empty-state" *ngIf="getItemsForStage(stage).length === 0">
+          <div class="empty-icon">📋</div>
+          <p class="empty-text">No items in {{ stage }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Instructions -->
+  <div class="instructions">
+    <div class="instruction-item">
+      <span class="instruction-icon">👆</span>
+      <span>Single-click an item to move it to the next stage</span>
+    </div>
+    <div class="instruction-item">
+      <span class="instruction-icon">👆👆</span>
+      <span>Double-click an item to move it back to the previous stage</span>
+    </div>
+  </div>
+</div>
